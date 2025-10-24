@@ -1,0 +1,47 @@
+{% extends 'transfers/base.html' %} {% block title %}Удаление записи - Система
+управления ДДС{% endblock %} {% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header bg-danger text-white">
+        <h4 class="mb-0">
+          <i class="fas fa-exclamation-triangle me-2"></i>Подтверждение удаления
+        </h4>
+      </div>
+      <div class="card-body">
+        <p>Вы уверены, что хотите удалить эту запись ДДС?</p>
+
+        <div class="card bg-light">
+          <div class="card-body">
+            <h6>Детали записи:</h6>
+            <p><strong>Статус:</strong> {{ record.status.name }}</p>
+            <p><strong>Тип:</strong> {{ record.transaction_type.name }}</p>
+            <p><strong>Категория:</strong> {{ record.category.name }}</p>
+            <p><strong>Подкатегория:</strong> {{ record.subcategory.name }}</p>
+            <p><strong>Сумма:</strong> {{ record.amount|floatformat:2 }} ₽</p>
+            {% if record.comment %}
+            <p><strong>Комментарий:</strong> {{ record.comment }}</p>
+            {% endif %}
+            <p>
+              <strong>Дата создания:</strong> {{ record.created_at|date:"d.m.Y
+              H:i" }}
+            </p>
+          </div>
+        </div>
+
+        <form method="post" class="mt-3">
+          {% csrf_token %}
+          <div class="d-flex justify-content-between">
+            <a href="{% url 'transfers:index' %}" class="btn btn-secondary">
+              <i class="fas fa-arrow-left me-1"></i>Отмена
+            </a>
+            <button type="submit" class="btn btn-danger">
+              <i class="fas fa-trash me-1"></i>Удалить
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

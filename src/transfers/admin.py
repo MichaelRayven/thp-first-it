@@ -77,10 +77,12 @@ class CashFlowRecordAdmin(admin.ModelAdmin):
     @display(description='Сумма')
     def amount_display(self, obj: CashFlowRecord) -> SafeString:
         """Отображение суммы с форматированием"""
+        color = 'green' if obj.transaction_type.name == 'Пополнение' else 'red'
+        amount_formatted = f'{obj.amount:.2f}'
         return format_html(
-            '<span style="font-weight: bold; color: {};">{:.2f} р.</span>',
-            'green' if obj.transaction_type.name == 'Пополнение' else 'red',
-            obj.amount,
+            '<span style="font-weight: bold; color: {};">{} р.</span>',
+            color,
+            amount_formatted,
         )
 
     @display(description='Комментарий')

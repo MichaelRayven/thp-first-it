@@ -1,0 +1,219 @@
+{% extends 'transfers/base.html' %}
+{% block title %}Создание записи ДДС - Система управления ДДС {% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <h4 class="mb-0">
+          <i
+            class="fas fa-{% if record %}edit{% else %}plus{% endif %} me-2"
+          ></i>
+          Создание записи ДДС
+        </h4>
+      </div>
+      <div class="card-body">
+        <form method="post" id="recordForm">
+          {% csrf_token %}
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="{{ form.status.id_for_label }}" class="form-label">
+                Статус <span class="text-danger">*</span>
+              </label>
+              {{ form.status }}
+              {% if form.status.errors %}
+              <div class="text-danger small mt-1">
+                {% for error in form.status.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label
+                for="{{ form.transaction_type.id_for_label }}"
+                class="form-label"
+              >
+                Тип операции <span class="text-danger">*</span>
+              </label>
+              {{ form.transaction_type }}
+              {% if form.transaction_type.errors %}
+              <div class="text-danger small mt-1">
+                {% for error in form.transaction_type.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="{{ form.category.id_for_label }}" class="form-label">
+                Категория <span class="text-danger">*</span>
+              </label>
+              {{ form.category }}
+              {% if form.category.errors %}
+              <div class="text-danger small mt-1">
+                {% for error in form.category.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label
+                for="{{ form.subcategory.id_for_label }}"
+                class="form-label"
+              >
+                Подкатегория <span class="text-danger">*</span>
+              </label>
+              {{ form.subcategory }}
+              {% if form.subcategory.errors %}
+              <div class="text-danger small mt-1">
+                {% for error in form.subcategory.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="{{ form.amount.id_for_label }}" class="form-label">
+                Сумма (₽) <span class="text-danger">*</span>
+              </label>
+              {{ form.amount }}
+              {% if form.amount.errors %}
+              <div class="text-danger small mt-1">
+                {% for error in form.amount.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="{{ form.comment.id_for_label }}" class="form-label">
+              Комментарий
+            </label>
+            {{ form.comment }}
+            {% if form.comment.errors %}
+            <div class="text-danger small mt-1">
+              {% for error in form.comment.errors %}
+                {{ error }}
+              {% endfor %}
+            </div>
+            {% endif %}
+          </div>
+
+          {% if form.non_field_errors %}
+          <div class="alert alert-danger">
+            {% for error in form.non_field_errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <div class="d-flex justify-content-between">
+            <a href="{% url 'transfers:index' %}" class="btn btn-secondary">
+              <i class="fas fa-arrow-left me-1"></i>Назад
+            </a>
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save me-1"></i>Сохранить
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+  $(document).ready(function () {
+    // Функция для обновления подкатегорий на основе выбранной категории
+    function updateSubcategories() {
+      var categoryId = $("#id_category").val();
+      var subcategorySelect = $("#id_subcategory");
+
+      // Очищаем существующие опции
+      subcategorySelect.empty();
+      subcategorySelect.append('<option value="">---------</option>');
+
+      if (categoryId) {
+        // AJAX запрос для получения подкатегорий
+        $.ajax({
+          url: '{% url "transfers:get_subcategories" %}',
+          data: {
+            category_id: categoryId,
+          },
+          dataType: "json",
+          success: function (data) {
+            $.each(data.subcategories, function (index, subcategory) {
+              subcategorySelect.append(
+                '<option value="' +
+                  subcategory.id +
+                  '">' +
+                  subcategory.name +
+                  "</option>"
+              );
+            });
+          },
+          error: function () {
+            console.log("Ошибка загрузки подкатегорий");
+          },
+        });
+      }
+    }
+
+    // Привязываем событие изменения к селекту категории
+    $("#id_category").on("change", updateSubcategories);
+
+    // Инициализируем подкатегории при загрузке страницы, если категория уже выбрана
+    updateSubcategories();
+
+    // Валидация формы на клиенте
+    $("#recordForm").on("submit", function (e) {
+      var isValid = true;
+      var errors = [];
+
+      // Проверяем обязательные поля
+      if (!$("#id_status").val()) {
+        errors.push("Статус обязателен для заполнения");
+        isValid = false;
+      }
+
+      if (!$("#id_transaction_type").val()) {
+        errors.push("Тип операции обязателен для заполнения");
+        isValid = false;
+      }
+
+      if (!$("#id_category").val()) {
+        errors.push("Категория обязательна для заполнения");
+        isValid = false;
+      }
+
+      if (!$("#id_subcategory").val()) {
+        errors.push("Подкатегория обязательна для заполнения");
+        isValid = false;
+      }
+
+      if (!$("#id_amount").val() || parseFloat($("#id_amount").val()) <= 0) {
+        errors.push("Сумма должна быть больше 0");
+        isValid = false;
+      }
+
+      if (!isValid) {
+        e.preventDefault();
+        alert("Ошибки в форме:\n" + errors.join("\n"));
+      }
+    });
+  });
+</script>
+{% endblock %}
