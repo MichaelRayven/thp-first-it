@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Manager
@@ -90,20 +91,22 @@ class CashFlowRecord(models.Model):
         on_delete=models.PROTECT,
         verbose_name='Статус',
     )
-    category = models.ForeignKey(
-        Category,
-        on_delete=models.PROTECT,
-        verbose_name='Категория',
-    )
     transaction_type = models.ForeignKey(
         TransactionType,
         on_delete=models.PROTECT,
         verbose_name='Тип операции',
     )
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.PROTECT,
+        verbose_name='Категория',
+        default=None,
+    )
     subcategory = models.ForeignKey(
         Subcategory,
         on_delete=models.PROTECT,
         verbose_name='Подкатегория',
+        default=None,
     )
 
     amount = models.DecimalField(
@@ -125,3 +128,11 @@ class CashFlowRecord(models.Model):
 
     def __str__(self) -> str:
         return f'Перевод: {self.transaction_type.name} - {self.amount} р.'
+
+    def clean(self) -> None:
+        if not hasattr(self, 'category'):
+            raise ValidationError('Категория обязательна.')
+        if not hasattr(self, 'subcategory'):
+            raise ValidationError('Подкатегория обязательна.')
+        if self.subcategory.category != self.category:
+            raise ValidationError('Подкатегория должна принадлежать выбранной категории.')

@@ -1,5 +1,6 @@
 import structlog
 from django.contrib import messages
+from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -81,6 +82,17 @@ def index(request: HttpRequest) -> HttpResponse:
     return render(request, 'index.html', context)
 
 
+def reference_management(request: HttpRequest) -> HttpResponse:
+    """Страница управления справочниками"""
+    context = {
+        'statuses': Status.objects.all(),
+        'transaction_types': TransactionType.objects.all(),
+        'categories': Category.objects.all(),
+        'subcategories': Subcategory.objects.select_related('category').all(),
+    }
+    return render(request, 'reference_management.html', context)
+
+
 @require_http_methods(['GET'])
 def get_subcategories(request: HttpRequest) -> JsonResponse:
     """AJAX endpoint для получения подкатегорий по категории"""
@@ -125,9 +137,14 @@ def record_edit(request: HttpRequest, pk: int) -> HttpResponse:
     if request.method == 'POST':
         form = CashFlowRecordForm(request.POST, instance=record)
         if form.is_valid():
-            form.save()
-            messages.success(request, 'Запись ДДС успешно обновлена!')
-            return redirect('transfers:index')
+            try:
+                form.save()
+                messages.success(request, 'Запись ДДС успешно обновлена!')
+                return redirect('transfers:index')
+            except ValidationError as e:
+                for field, errors in e.error_dict.items():
+                    form.add_error(field, errors)
+                messages.error(request, 'Пожалуйста, исправьте ошибки в форме')
     else:
         form = CashFlowRecordForm(instance=record)
 
@@ -149,17 +166,6 @@ def record_delete(request: HttpRequest, pk: int) -> HttpResponse:
         return redirect('transfers:index')
 
     return render(request, 'cash-flow-record/record_confirm_delete.html', {'record': record})
-
-
-def reference_management(request: HttpRequest) -> HttpResponse:
-    """Страница управления справочниками"""
-    context = {
-        'statuses': Status.objects.all(),
-        'transaction_types': TransactionType.objects.all(),
-        'categories': Category.objects.all(),
-        'subcategories': Subcategory.objects.select_related('category').all(),
-    }
-    return render(request, 'reference_management.html', context)
 
 
 # Управление статусами

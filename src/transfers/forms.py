@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Any, cast
 
 from django import forms
+from django.core.exceptions import ValidationError
 
 from .models import (
     CashFlowRecord,
@@ -31,7 +32,9 @@ class CashFlowRecordForm(forms.ModelForm):
             'amount': forms.NumberInput(
                 attrs={'step': '0.01', 'min': '0.01', 'class': 'form-control'},
             ),
-            'comment': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
+            'comment': forms.Textarea(
+                attrs={'rows': 3, 'class': 'form-control'},
+            ),
             'status': forms.Select(attrs={'class': 'form-control'}),
             'transaction_type': forms.Select(attrs={'class': 'form-control'}),
             'category': forms.Select(attrs={'class': 'form-control'}),
@@ -41,15 +44,37 @@ class CashFlowRecordForm(forms.ModelForm):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
-        # Cast fields to ModelChoiceField for proper typing
-        status_field = cast('ModelChoiceField', self.fields['status'])
-        transaction_type_field = cast('ModelChoiceField', self.fields['transaction_type'])
-        category_field = cast('ModelChoiceField', self.fields['category'])
-        subcategory_field = cast('ModelChoiceField', self.fields['subcategory'])
+        self.configure_error_messages()
+        self.configure_querysets()
 
-        status_field.queryset = Status.objects.filter(is_active=True)
-        transaction_type_field.queryset = TransactionType.objects.filter(is_active=True)
-        category_field.queryset = Category.objects.filter(is_active=True)
+    def configure_error_messages(self) -> None:
+        self.fields['status'].error_messages = {'required': 'Статус обязателен для заполнения'}
+        self.fields['transaction_type'].error_messages = {
+            'required': 'Тип операции обязателен для заполнения',
+        }
+        self.fields['category'].error_messages = {
+            'required': 'Категория обязательна для заполнения',
+        }
+        self.fields['subcategory'].error_messages = {
+            'required': 'Подкатегория обязательна для заполнения',
+            'invalid_choice': 'Выбранная подкатегория не существует или неактивна',
+        }
+        self.fields['amount'].error_messages = {'required': 'Сумма обязательна для заполнения'}
+        self.fields['comment'].error_messages = {
+            'required': 'Комментарий обязателен для заполнения',
+        }
+
+    def configure_querysets(self) -> None:
+        cast('ModelChoiceField', self.fields['status']).queryset = Status.objects.filter(
+            is_active=True,
+        )
+        cast(
+            'ModelChoiceField',
+            self.fields['transaction_type'],
+        ).queryset = TransactionType.objects.filter(is_active=True)
+        cast('ModelChoiceField', self.fields['category']).queryset = Category.objects.filter(
+            is_active=True,
+        )
 
         category_id = None
         if self.data and 'category' in self.data:
@@ -59,7 +84,7 @@ class CashFlowRecordForm(forms.ModelForm):
             # Если редактируем существующую запись используем текущую категорию
             category_id = self.instance.category.id
 
-        subcategory_field.queryset = (
+        cast('ModelChoiceField', self.fields['subcategory']).queryset = (
             Subcategory.objects.filter(
                 category_id=category_id,
                 is_active=True,
@@ -67,6 +92,23 @@ class CashFlowRecordForm(forms.ModelForm):
             if category_id
             else Subcategory.objects.none()
         )
+
+    def clean_subcategory(self) -> Subcategory:
+        subcategory: Subcategory = self.cleaned_data.get('subcategory', False)
+        category: Category = self.cleaned_data.get('category', False)
+
+        if subcategory.category != category:
+            raise ValidationError(
+                {'subcategory': 'Подкатегория должна принадлежать выбранной категории'},
+            )
+
+        return subcategory
+
+    def clean_amount(self) -> float:
+        amount: float = self.cleaned_data.get('amount', False)
+        if not amount or amount <= 0:
+            raise ValidationError({'amount': 'Сумма должна быть больше 0'})
+        return amount
 
 
 class StatusForm(forms.ModelForm):
@@ -77,6 +119,11 @@ class StatusForm(forms.ModelForm):
         fields = ['name']
         widgets = {'name': forms.TextInput(attrs={'class': 'form-control'})}
 
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+
+        self.fields['name'].error_messages = {'required': 'Название обязательно для заполнения'}
+
 
 class TransactionTypeForm(forms.ModelForm):
     """Форма для создания/редактирования типа операции"""
@@ -86,6 +133,11 @@ class TransactionTypeForm(forms.ModelForm):
         fields = ['name']
         widgets = {'name': forms.TextInput(attrs={'class': 'form-control'})}
 
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+
+        self.fields['name'].error_messages = {'required': 'Название обязательно для заполнения'}
+
 
 class CategoryForm(forms.ModelForm):
     """Форма для создания/редактирования категории"""
@@ -94,6 +146,11 @@ class CategoryForm(forms.ModelForm):
         model = Category
         fields = ['name']
         widgets = {'name': forms.TextInput(attrs={'class': 'form-control'})}
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+
+        self.fields['name'].error_messages = {'required': 'Название обязательно для заполнения'}
 
 
 class SubcategoryForm(forms.ModelForm):
@@ -111,3 +168,8 @@ class SubcategoryForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         category_field = cast('ModelChoiceField', self.fields['category'])
         category_field.queryset = Category.objects.filter(is_active=True)
+
+        self.fields['name'].error_messages = {'required': 'Название обязательно для заполнения'}
+        self.fields['category'].error_messages = {
+            'required': 'Категория обязательна для заполнения',
+        }
