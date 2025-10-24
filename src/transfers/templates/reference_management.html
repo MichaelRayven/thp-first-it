@@ -1,29 +1,9 @@
-{% extends 'transfers/base.html' %} {% block title %}Управление справочниками -
-Система управления ДДС{% endblock %} {% block content %}
+{% extends 'base.html' %} {% block title %}Управление справочниками - Система
+управления ДДС{% endblock %} {% block content %}
 <div class="row">
   <div class="col-12">
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <h1><i class="fas fa-cogs me-2"></i>Управление справочниками</h1>
-      <div class="btn-group">
-        <a
-          href="{% url 'transfers:status_create' %}"
-          class="btn btn-outline-primary"
-        >
-          <i class="fas fa-plus me-1"></i>Добавить статус
-        </a>
-        <a
-          href="{% url 'transfers:category_create' %}"
-          class="btn btn-outline-success"
-        >
-          <i class="fas fa-plus me-1"></i>Добавить категорию
-        </a>
-        <a
-          href="{% url 'transfers:subcategory_create' %}"
-          class="btn btn-outline-info"
-        >
-          <i class="fas fa-plus me-1"></i>Добавить подкатегорию
-        </a>
-      </div>
+      <h1><i class="fas fa-cogs"></i>Управление справочниками</h1>
     </div>
 
     <div class="row">
@@ -47,16 +27,19 @@
                 </span>
                 <div class="btn-group btn-group-sm">
                   <a
-                    href="/admin/transfers/status/{{ status.id }}/change/"
+                    href="{% url 'transfers:status_edit' status.id %}"
                     class="btn btn-outline-primary btn-sm"
+                    title="Редактировать"
                   >
                     <i class="fas fa-edit"></i>
                   </a>
-                  {% if status.is_active %}
-                  <span class="badge bg-success">Активен</span>
-                  {% else %}
-                  <span class="badge bg-secondary">Неактивен</span>
-                  {% endif %}
+                  <a
+                    href="{% url 'transfers:status_delete' status.id %}"
+                    class="btn btn-outline-danger btn-sm"
+                    title="Удалить"
+                  >
+                    <i class="fas fa-trash"></i>
+                  </a>
                 </div>
               </div>
               {% endfor %}
@@ -65,13 +48,21 @@
             <p class="text-muted text-center">Статусы не найдены</p>
             {% endif %}
           </div>
+          <div class="card-footer">
+            <a
+              href="{% url 'transfers:status_create' %}"
+              class="btn btn-outline-primary w-100"
+            >
+              <i class="fas fa-plus me-1"></i>Добавить статус
+            </a>
+          </div>
         </div>
       </div>
 
       <!-- Типы операций -->
       <div class="col-md-6 col-lg-3 mb-4">
         <div class="card h-100">
-          <div class="card-header bg-success text-white">
+          <div class="card-header bg-primary text-white">
             <h5 class="mb-0">
               <i class="fas fa-exchange-alt me-2"></i>Типы операций
             </h5>
@@ -88,16 +79,19 @@
                 </span>
                 <div class="btn-group btn-group-sm">
                   <a
-                    href="/admin/transfers/transactiontype/{{ type.id }}/change/"
-                    class="btn btn-outline-success btn-sm"
+                    href="{% url 'transfers:transaction_type_edit' type.id %}"
+                    class="btn btn-outline-primary btn-sm"
+                    title="Редактировать"
                   >
                     <i class="fas fa-edit"></i>
                   </a>
-                  {% if type.is_active %}
-                  <span class="badge bg-success">Активен</span>
-                  {% else %}
-                  <span class="badge bg-secondary">Неактивен</span>
-                  {% endif %}
+                  <a
+                    href="{% url 'transfers:transaction_type_delete' type.id %}"
+                    class="btn btn-outline-danger btn-sm"
+                    title="Удалить"
+                  >
+                    <i class="fas fa-trash"></i>
+                  </a>
                 </div>
               </div>
               {% endfor %}
@@ -106,13 +100,21 @@
             <p class="text-muted text-center">Типы операций не найдены</p>
             {% endif %}
           </div>
+          <div class="card-footer">
+            <a
+              href="{% url 'transfers:transaction_type_create' %}"
+              class="btn btn-outline-primary w-100"
+            >
+              <i class="fas fa-plus me-1"></i>Добавить тип операции
+            </a>
+          </div>
         </div>
       </div>
 
       <!-- Категории -->
       <div class="col-md-6 col-lg-3 mb-4">
         <div class="card h-100">
-          <div class="card-header bg-info text-white">
+          <div class="card-header bg-primary text-white">
             <h5 class="mb-0"><i class="fas fa-folder me-2"></i>Категории</h5>
           </div>
           <div class="card-body">
@@ -129,16 +131,19 @@
                 </span>
                 <div class="btn-group btn-group-sm">
                   <a
-                    href="/admin/transfers/category/{{ category.id }}/change/"
-                    class="btn btn-outline-info btn-sm"
+                    href="{% url 'transfers:category_edit' category.id %}"
+                    class="btn btn-outline-primary btn-sm"
+                    title="Редактировать"
                   >
                     <i class="fas fa-edit"></i>
                   </a>
-                  {% if category.is_active %}
-                  <span class="badge bg-success">Активна</span>
-                  {% else %}
-                  <span class="badge bg-secondary">Неактивна</span>
-                  {% endif %}
+                  <a
+                    href="{% url 'transfers:category_delete' category.id %}"
+                    class="btn btn-outline-danger btn-sm"
+                    title="Удалить"
+                  >
+                    <i class="fas fa-trash"></i>
+                  </a>
                 </div>
               </div>
               {% endfor %}
@@ -147,13 +152,21 @@
             <p class="text-muted text-center">Категории не найдены</p>
             {% endif %}
           </div>
+          <div class="card-footer">
+            <a
+              href="{% url 'transfers:category_create' %}"
+              class="btn btn-outline-primary w-100"
+            >
+              <i class="fas fa-plus me-1"></i>Добавить категорию
+            </a>
+          </div>
         </div>
       </div>
 
       <!-- Подкатегории -->
       <div class="col-md-6 col-lg-3 mb-4">
         <div class="card h-100">
-          <div class="card-header bg-warning text-dark">
+          <div class="card-header bg-primary text-white">
             <h5 class="mb-0">
               <i class="fas fa-folder-open me-2"></i>Подкатегории
             </h5>
@@ -178,16 +191,19 @@
                 </div>
                 <div class="btn-group btn-group-sm">
                   <a
-                    href="/admin/transfers/subcategory/{{ subcategory.id }}/change/"
-                    class="btn btn-outline-warning btn-sm"
+                    href="{% url 'transfers:subcategory_edit' subcategory.id %}"
+                    class="btn btn-outline-primary btn-sm"
+                    title="Редактировать"
                   >
                     <i class="fas fa-edit"></i>
                   </a>
-                  {% if subcategory.is_active %}
-                  <span class="badge bg-success">Активна</span>
-                  {% else %}
-                  <span class="badge bg-secondary">Неактивна</span>
-                  {% endif %}
+                  <a
+                    href="{% url 'transfers:subcategory_delete' subcategory.id %}"
+                    class="btn btn-outline-danger btn-sm"
+                    title="Удалить"
+                  >
+                    <i class="fas fa-trash"></i>
+                  </a>
                 </div>
               </div>
               {% endfor %}
@@ -196,53 +212,13 @@
             <p class="text-muted text-center">Подкатегории не найдены</p>
             {% endif %}
           </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Инструкции -->
-    <div class="row mt-4">
-      <div class="col-12">
-        <div class="card">
-          <div class="card-header">
-            <h5 class="mb-0">
-              <i class="fas fa-info-circle me-2"></i>Инструкции по управлению
-              справочниками
-            </h5>
-          </div>
-          <div class="card-body">
-            <div class="row">
-              <div class="col-md-6">
-                <h6><i class="fas fa-tags me-1"></i>Статусы</h6>
-                <p class="small text-muted">
-                  Статусы определяют принадлежность записи (Бизнес, Личное,
-                  Налог и т.д.). Можно добавлять новые статусы по мере
-                  необходимости.
-                </p>
-
-                <h6><i class="fas fa-exchange-alt me-1"></i>Типы операций</h6>
-                <p class="small text-muted">
-                  Типы операций определяют направление движения средств
-                  (Пополнение, Списание и т.д.). Список можно расширять новыми
-                  типами.
-                </p>
-              </div>
-              <div class="col-md-6">
-                <h6><i class="fas fa-folder me-1"></i>Категории</h6>
-                <p class="small text-muted">
-                  Основные категории для группировки расходов и доходов
-                  (Инфраструктура, Маркетинг и т.д.). Каждая категория может
-                  иметь несколько подкатегорий.
-                </p>
-
-                <h6><i class="fas fa-folder-open me-1"></i>Подкатегории</h6>
-                <p class="small text-muted">
-                  Детализация внутри категорий (например, VPS, Proxy для
-                  категории Инфраструктура). Подкатегория обязательно должна
-                  быть связана с категорией.
-                </p>
-              </div>
-            </div>
+          <div class="card-footer">
+            <a
+              href="{% url 'transfers:subcategory_create' %}"
+              class="btn btn-outline-primary w-100"
+            >
+              <i class="fas fa-plus me-1"></i>Добавить подкатегорию
+            </a>
           </div>
         </div>
       </div>
