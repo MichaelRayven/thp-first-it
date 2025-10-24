@@ -111,7 +111,7 @@ class CashFlowRecord(models.Model):
     class Meta:
         verbose_name = 'Запись ДДС'
         verbose_name_plural = 'Записи ДДС'
-        ordering = ['-created_date', '-created_at']
+        ordering = ['-created_at']
 
     def __str__(self) -> str:
         return f'Перевод: {self.transaction_type.name} - {self.amount} р.'
