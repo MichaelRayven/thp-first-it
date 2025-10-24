@@ -224,6 +224,15 @@ def status_delete(request: HttpRequest, pk: int) -> HttpResponse:
     )
 
 
+def status_enable(request: HttpRequest, pk: int) -> HttpResponse:
+    """Включение статуса"""
+    status = get_object_or_404(Status, pk=pk)
+    status.is_active = True
+    status.save()
+    messages.success(request, 'Статус успешно включен!')
+    return redirect('transfers:reference_management')
+
+
 # Управление типами операций
 def transaction_type_create(request: HttpRequest) -> HttpResponse:
     """Создание типа операции"""
@@ -284,6 +293,15 @@ def transaction_type_delete(request: HttpRequest, pk: int) -> HttpResponse:
     )
 
 
+def transaction_type_enable(request: HttpRequest, pk: int) -> HttpResponse:
+    """Включение типа операции"""
+    transaction_type = get_object_or_404(TransactionType, pk=pk)
+    transaction_type.is_active = True
+    transaction_type.save()
+    messages.success(request, 'Тип операции успешно включен!')
+    return redirect('transfers:reference_management')
+
+
 # Управление категориями
 def category_create(request: HttpRequest) -> HttpResponse:
     """Создание категории"""
@@ -338,6 +356,15 @@ def category_delete(request: HttpRequest, pk: int) -> HttpResponse:
         'category/category_confirm_delete.html',
         {'category': category},
     )
+
+
+def category_enable(request: HttpRequest, pk: int) -> HttpResponse:
+    """Включение категории"""
+    category = get_object_or_404(Category, pk=pk)
+    category.is_active = True
+    category.save()
+    messages.success(request, 'Категория успешно включена!')
+    return redirect('transfers:reference_management')
 
 
 # Управление подкатегориями
@@ -403,3 +430,12 @@ def subcategory_delete(request: HttpRequest, pk: int) -> HttpResponse:
         'subcategory/subcategory_confirm_delete.html',
         {'subcategory': subcategory},
     )
+
+
+def subcategory_enable(request: HttpRequest, pk: int) -> HttpResponse:
+    """Включение подкатегории"""
+    subcategory = get_object_or_404(Subcategory, pk=pk)
+    subcategory.is_active = True
+    subcategory.save()
+    messages.success(request, 'Подкатегория успешно включена!')
+    return redirect('transfers:reference_management')

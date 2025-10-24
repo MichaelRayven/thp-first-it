@@ -33,6 +33,15 @@
                   >
                     <i class="fas fa-edit"></i>
                   </a>
+                  {% if not status.is_active %}
+                  <a
+                    href="{% url 'transfers:status_enable' status.id %}"
+                    class="btn btn-outline-success btn-sm"
+                    title="Включить"
+                  >
+                    <i class="fas fa-check"></i>
+                  </a>
+                  {% else %}
                   <a
                     href="{% url 'transfers:status_delete' status.id %}"
                     class="btn btn-outline-danger btn-sm"
@@ -40,6 +49,7 @@
                   >
                     <i class="fas fa-trash"></i>
                   </a>
+                  {% endif %}
                 </div>
               </div>
               {% endfor %}
@@ -85,6 +95,15 @@
                   >
                     <i class="fas fa-edit"></i>
                   </a>
+                  {% if not type.is_active %}
+                  <a
+                    href="{% url 'transfers:transaction_type_enable' type.id %}"
+                    class="btn btn-outline-success btn-sm"
+                    title="Включить"
+                  >
+                    <i class="fas fa-check"></i>
+                  </a>
+                  {% else %}
                   <a
                     href="{% url 'transfers:transaction_type_delete' type.id %}"
                     class="btn btn-outline-danger btn-sm"
@@ -92,6 +111,7 @@
                   >
                     <i class="fas fa-trash"></i>
                   </a>
+                  {% endif %}
                 </div>
               </div>
               {% endfor %}
@@ -137,6 +157,15 @@
                   >
                     <i class="fas fa-edit"></i>
                   </a>
+                  {% if not category.is_active %}
+                  <a
+                    href="{% url 'transfers:category_enable' category.id %}"
+                    class="btn btn-outline-success btn-sm"
+                    title="Включить"
+                  >
+                    <i class="fas fa-check"></i>
+                  </a>
+                  {% else %}
                   <a
                     href="{% url 'transfers:category_delete' category.id %}"
                     class="btn btn-outline-danger btn-sm"
@@ -144,6 +173,7 @@
                   >
                     <i class="fas fa-trash"></i>
                   </a>
+                  {% endif %}
                 </div>
               </div>
               {% endfor %}
@@ -197,6 +227,15 @@
                   >
                     <i class="fas fa-edit"></i>
                   </a>
+                  {% if not subcategory.is_active %}
+                  <a
+                    href="{% url 'transfers:subcategory_enable' subcategory.id %}"
+                    class="btn btn-outline-success btn-sm"
+                    title="Включить"
+                  >
+                    <i class="fas fa-check"></i>
+                  </a>
+                  {% else %}
                   <a
                     href="{% url 'transfers:subcategory_delete' subcategory.id %}"
                     class="btn btn-outline-danger btn-sm"
@@ -204,6 +243,7 @@
                   >
                     <i class="fas fa-trash"></i>
                   </a>
+                  {% endif %}
                 </div>
               </div>
               {% endfor %}
