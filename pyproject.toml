@@ -6,15 +6,14 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "django>=5.2.7",
-    "django-ninja>=1.4.5",
-    "pydantic-settings>=2.11.0",
+    "djangorestframework>=3.15.0",
+    "django-cors-headers>=4.3.0",
+    "django-filter>=24.0",
     "structlog>=25.4.0",
 ]
 
 [dependency-groups]
 dev = [
-    "django-stubs[compatible-mypy]>=5.2.7",
-    "mypy>=1.18.2",
     "poethepoet>=0.37.0",
     "prek>=0.2.10",
     "ruff>=0.14.2",
@@ -88,62 +87,6 @@ quote-style = "single"
 inline-quotes = "single"
 
 
-[tool.mypy]
-plugins = ["pydantic.mypy", "mypy_django_plugin.main"]
-files = ["src/**/*.py"]
-
-explicit_package_bases = true
-show_error_codes = true
-ignore_missing_imports = true
-no_implicit_optional = true
-check_untyped_defs = true
-disable_error_code = ["import-untyped"]
-
-warn_unused_configs = true
-warn_return_any = true
-warn_unused_ignores = true
-warn_redundant_casts = true
-
-disallow_untyped_defs = true
-disallow_untyped_calls = true
-disallow_incomplete_defs = true
-
-[tool.pydantic-mypy]
-init_forbid_extra = true
-init_typed = true
-warn_required_dynamic_aliases = true
-warn_untyped_fields = false
-
-[tool.django-stubs]
-django_settings_module = "src.config"
-
-[[tool.mypy.overrides]]
-module = [
-  "src.*.models"
-]
-disable_error_code = ["var-annotated", "no-any-return"]
-
-[[tool.mypy.overrides]]
-module = [
-  "src.*.admin"
-]
-disable_error_code = ["no-any-return"]
-
-[[tool.mypy.overrides]]
-module = [
-  "src.shop.services"
-]
-disable_error_code = ["union-attr"]
-
-[[tool.mypy.overrides]]
-module = [
-  "src.*.migrations.*"
-]
-disable_error_code = [
-  "valid-type",
-  "attr-defined",
-  "misc",
-]
 
 [tool.poe.tasks]
 lint = { cmd = "uv run prek run --all-files", help = "Run linting through pre-commit" }
