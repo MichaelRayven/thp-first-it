@@ -44,7 +44,6 @@ INSTALLED_APPS = [
 
 THIRD_PARTY_APPS = [
     'ninja',
-    'ninja_extra',
 ]
 
 LOCAL_APPS = [
