@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    // Загрузка всех списков данных
+    // Loading all references
     loadStatuses();
     loadTransactionTypes();
     loadCategories();
@@ -19,12 +19,6 @@ $(document).ready(function() {
 
     $("#saveSubcategory").click(function() {
         saveSubcategory();
-    });
-
-    // Category change handler for subcategory modal
-    $("#subcategoryCategory").change(function() {
-        const selectedCategoryId = $(this).val();
-        loadSubcategoriesForModal(selectedCategoryId);
     });
 });
 
@@ -53,7 +47,7 @@ function loadStatuses() {
                             </button>
 
                             ${!status.is_active ?
-                              `<button class="btn btn-success btn-sm" onclick="enableStatus(${status.id})"><i class="fas fa-check"></i></button>` :
+                              `<button class="btn btn-success btn-sm" onclick="enableStatus(${status.id})"><i class="fas fa-plus"></i></button>` :
                               `<button class="btn btn-danger btn-sm" onclick="deleteStatus(${status.id})"><i class="fas fa-trash"></i></button>`}
                         </td>
                     </tr>
@@ -79,7 +73,7 @@ function editStatus(id) {
         },
         error: function (xhr, status, error) {
             console.log("Error loading status:", error);
-            showToast('Ошибка при загрузке статуса', 'error');
+            CommonUtils.showToast('Ошибка при загрузке статуса', 'error');
         },
     });
 }
@@ -102,13 +96,13 @@ function saveStatus() {
                 contentType: "application/json; charset=UTF-8",
                 dataType: "json",
                 success: function (data) {
-                    showToast('Статус успешно обновлен', 'success');
+                    CommonUtils.showToast('Статус успешно обновлен', 'success');
                     CommonUtils.hideModal('statusModal');
-                    loadAllReferenceData();
+                    loadStatuses();
                 },
                 error: function (xhr, status, error) {
                     CommonUtils.handleFormErrors(xhr, 'statusForm');
-                    showToast('Ошибка при обновлении статуса', 'error');
+                    CommonUtils.showToast('Ошибка при обновлении статуса', 'error');
                 },
             });
         } else {
@@ -119,36 +113,34 @@ function saveStatus() {
                 contentType: "application/json; charset=UTF-8",
                 dataType: "json",
                 success: function (data) {
-                    showToast('Статус успешно создан', 'success');
+                    CommonUtils.showToast('Статус успешно создан', 'success');
                     CommonUtils.hideModal('statusModal');
-                    loadAllReferenceData();
+                    loadStatuses();
                 },
                 error: function (xhr, status, error) {
                     CommonUtils.handleFormErrors(xhr, 'statusForm');
-                    showToast('Ошибка при создании статуса', 'error');
+                    CommonUtils.showToast('Ошибка при создании статуса', 'error');
                 },
             });
         }
     } catch (error) {
-        showToast('Ошибка при сохранении статуса', 'error');
+        CommonUtils.showToast('Ошибка при сохранении статуса', 'error');
     }
 }
 
 function deleteStatus(id) {
-    if (confirm('Вы уверены, что хотите удалить этот статус?')) {
-        $.ajax({
-            url: `/api/statuses/${id}/`,
-            type: "DELETE",
-            success: function () {
-                showToast('Статус успешно удален', 'success');
-                loadAllReferenceData();
-            },
-            error: function (xhr, status, error) {
-                console.log("Error deleting status:", error);
-                showToast('Ошибка при удалении статуса', 'error');
-            },
-        });
-    }
+    $.ajax({
+        url: `/api/statuses/${id}/`,
+        type: "DELETE",
+        success: function () {
+            CommonUtils.showToast('Статус успешно удален', 'success');
+            loadStatuses();
+        },
+        error: function (xhr, status, error) {
+            console.log("Error deleting status:", error);
+            CommonUtils.showToast('Ошибка при удалении статуса', 'error');
+        },
+    });
 }
 
 function enableStatus(id) {
@@ -156,12 +148,12 @@ function enableStatus(id) {
         url: `/api/statuses/${id}/enable/`,
         type: "POST",
         success: function () {
-            showToast('Статус успешно включен', 'success');
-            loadAllReferenceData();
+            CommonUtils.showToast('Статус успешно включен', 'success');
+            loadStatuses();
         },
         error: function (xhr, status, error) {
             console.log("Error enabling status:", error);
-            showToast('Ошибка при включении статуса', 'error');
+            CommonUtils.showToast('Ошибка при включении статуса', 'error');
         },
     });
 }
@@ -188,7 +180,7 @@ function loadTransactionTypes() {
                             </button>
 
                             ${!transactionType.is_active ?
-                              `<button class="btn btn-success btn-sm" onclick="enableTransactionType(${transactionType.id})"><i class="fas fa-check"></i></button>` :
+                              `<button class="btn btn-success btn-sm" onclick="enableTransactionType(${transactionType.id})"><i class="fas fa-plus"></i></button>` :
                               `<button class="btn btn-danger btn-sm" onclick="deleteTransactionType(${transactionType.id})"><i class="fas fa-trash"></i></button>`}
                         </td>
                     </tr>
@@ -197,7 +189,7 @@ function loadTransactionTypes() {
         },
         error: function (xhr, status, error) {
             console.log("Error loading transaction types:", error);
-            showToast('Ошибка при загрузке типов операций', 'error');
+            CommonUtils.showToast('Ошибка при загрузке типов операций', 'error');
         },
     });
 }
@@ -214,7 +206,7 @@ function editTransactionType(id) {
         },
         error: function (xhr, status, error) {
             console.log("Error loading transaction type:", error);
-            showToast('Ошибка при загрузке типа операции', 'error');
+            CommonUtils.showToast('Ошибка при загрузке типа операции', 'error');
         },
     });
 }
@@ -237,13 +229,13 @@ function saveTransactionType() {
                 contentType: "application/json; charset=UTF-8",
                 dataType: "json",
                 success: function (data) {
-                    showToast('Тип операции успешно обновлен', 'success');
+                    CommonUtils.showToast('Тип операции успешно обновлен', 'success');
                     CommonUtils.hideModal('transactionTypeModal');
-                    loadAllReferenceData();
+                    loadTransactionTypes();
                 },
                 error: function (xhr, status, error) {
                     CommonUtils.handleFormErrors(xhr, 'transactionTypeForm');
-                    showToast('Ошибка при обновлении типа операции', 'error');
+                    CommonUtils.showToast('Ошибка при обновлении типа операции', 'error');
                 },
             });
         } else {
@@ -254,36 +246,34 @@ function saveTransactionType() {
                 contentType: "application/json; charset=UTF-8",
                 dataType: "json",
                 success: function (data) {
-                    showToast('Тип операции успешно создан', 'success');
+                    CommonUtils.showToast('Тип операции успешно создан', 'success');
                     CommonUtils.hideModal('transactionTypeModal');
-                    loadAllReferenceData();
+                    loadTransactionTypes();
                 },
                 error: function (xhr, status, error) {
                     CommonUtils.handleFormErrors(xhr, 'transactionTypeForm');
-                    showToast('Ошибка при создании типа операции', 'error');
+                    CommonUtils.showToast('Ошибка при создании типа операции', 'error');
                 },
             });
         }
     } catch (error) {
-        showToast('Ошибка при сохранении типа операции', 'error');
+        CommonUtils.showToast('Ошибка при сохранении типа операции', 'error');
     }
 }
 
 function deleteTransactionType(id) {
-    if (confirm('Вы уверены, что хотите удалить этот тип операции?')) {
-        $.ajax({
-            url: `/api/transaction-types/${id}/`,
-            type: "DELETE",
-            success: function () {
-                showToast('Тип операции успешно удален', 'success');
-                loadAllReferenceData();
-            },
-            error: function (xhr, status, error) {
-                console.log("Error deleting transaction type:", error);
-                showToast('Ошибка при удалении типа операции', 'error');
-            },
-        });
-    }
+    $.ajax({
+        url: `/api/transaction-types/${id}/`,
+        type: "DELETE",
+        success: function () {
+            CommonUtils.showToast('Тип операции успешно удален', 'success');
+            loadTransactionTypes();
+        },
+        error: function (xhr, status, error) {
+            console.log("Error deleting transaction type:", error);
+            CommonUtils.showToast('Ошибка при удалении типа операции', 'error');
+        },
+    });
 }
 
 function enableTransactionType(id) {
@@ -291,12 +281,12 @@ function enableTransactionType(id) {
         url: `/api/transaction-types/${id}/enable/`,
         type: "POST",
         success: function () {
-            showToast('Тип операции успешно включен', 'success');
-            loadAllReferenceData();
+            CommonUtils.showToast('Тип операции успешно включен', 'success');
+            loadTransactionTypes();
         },
         error: function (xhr, status, error) {
             console.log("Error enabling transaction type:", error);
-            showToast('Ошибка при включении типа операции', 'error');
+            CommonUtils.showToast('Ошибка при включении типа операции', 'error');
         },
     });
 }
@@ -322,7 +312,7 @@ function loadCategories() {
                                 <i class="fas fa-edit"></i>
                             </button>
 
-                            ${!category.is_active ? `<button class="btn btn-success btn-sm" onclick="enableCategory(${category.id})"><i class="fas fa-check"></i></button>` :
+                            ${!category.is_active ? `<button class="btn btn-success btn-sm" onclick="enableCategory(${category.id})"><i class="fas fa-plus"></i></button>` :
                               `<button class="btn btn-danger btn-sm" onclick="deleteCategory(${category.id})"><i class="fas fa-trash"></i></button>`}
                         </td>
                     </tr>
@@ -331,7 +321,7 @@ function loadCategories() {
         },
         error: function (xhr, status, error) {
             console.log("Error loading categories:", error);
-            showToast('Ошибка при загрузке категорий', 'error');
+            CommonUtils.showToast('Ошибка при загрузке категорий', 'error');
         },
     });
 }
@@ -348,7 +338,7 @@ function editCategory(id) {
         },
         error: function (xhr, status, error) {
             console.log("Error loading category:", error);
-            showToast('Ошибка при загрузке категории', 'error');
+            CommonUtils.showToast('Ошибка при загрузке категории', 'error');
         },
     });
 }
@@ -371,13 +361,13 @@ function saveCategory() {
                 contentType: "application/json; charset=UTF-8",
                 dataType: "json",
                 success: function (data) {
-                    showToast('Категория успешно обновлена', 'success');
+                    CommonUtils.showToast('Категория успешно обновлена', 'success');
                     CommonUtils.hideModal('categoryModal');
-                    loadAllReferenceData();
+                    loadCategories();
                 },
                 error: function (xhr, status, error) {
                     CommonUtils.handleFormErrors(xhr, 'categoryForm');
-                    showToast('Ошибка при обновлении категории', 'error');
+                    CommonUtils.showToast('Ошибка при обновлении категории', 'error');
                 },
             });
         } else {
@@ -388,36 +378,34 @@ function saveCategory() {
                 contentType: "application/json; charset=UTF-8",
                 dataType: "json",
                 success: function (data) {
-                    showToast('Категория успешно создана', 'success');
+                    CommonUtils.showToast('Категория успешно создана', 'success');
                     CommonUtils.hideModal('categoryModal');
-                    loadAllReferenceData();
+                    loadCategories();
                 },
                 error: function (xhr, status, error) {
                     CommonUtils.handleFormErrors(xhr, 'categoryForm');
-                    showToast('Ошибка при создании категории', 'error');
+                    CommonUtils.showToast('Ошибка при создании категории', 'error');
                 },
             });
         }
     } catch (error) {
-        showToast('Ошибка при сохранении категории', 'error');
+        CommonUtils.showToast('Ошибка при сохранении категории', 'error');
     }
 }
 
 function deleteCategory(id) {
-    if (confirm('Вы уверены, что хотите удалить эту категорию?')) {
-        $.ajax({
-            url: `/api/categories/${id}/`,
-            type: "DELETE",
-            success: function () {
-                showToast('Категория успешно удалена', 'success');
-                loadAllReferenceData();
-            },
-            error: function (xhr, status, error) {
-                console.log("Error deleting category:", error);
-                showToast('Ошибка при удалении категории', 'error');
-            },
-        });
-    }
+    $.ajax({
+        url: `/api/categories/${id}/`,
+        type: "DELETE",
+        success: function () {
+            CommonUtils.showToast('Категория успешно удалена', 'success');
+            loadCategories();
+        },
+        error: function (xhr, status, error) {
+            console.log("Error deleting category:", error);
+            CommonUtils.showToast('Ошибка при удалении категории', 'error');
+        },
+    });
 }
 
 function enableCategory(id) {
@@ -425,12 +413,12 @@ function enableCategory(id) {
         url: `/api/categories/${id}/enable/`,
         type: "POST",
         success: function () {
-            showToast('Категория успешно включена', 'success');
-            loadAllReferenceData();
+            CommonUtils.showToast('Категория успешно включена', 'success');
+            loadCategories();
         },
         error: function (xhr, status, error) {
             console.log("Error enabling category:", error);
-            showToast('Ошибка при включении категории', 'error');
+            CommonUtils.showToast('Ошибка при включении категории', 'error');
         },
     });
 }
@@ -458,7 +446,7 @@ function loadSubcategories() {
                             </button>
 
                             ${!subcategory.is_active ?
-                              `<button class="btn btn-success btn-sm" onclick="enableSubcategory(${subcategory.id})"><i class="fas fa-check"></i></button>` :
+                              `<button class="btn btn-success btn-sm" onclick="enableSubcategory(${subcategory.id})"><i class="fas fa-plus"></i></button>` :
                               `<button class="btn btn-danger btn-sm" onclick="deleteSubcategory(${subcategory.id})"><i class="fas fa-trash"></i></button>`}
                         </td>
                     </tr>
@@ -467,7 +455,7 @@ function loadSubcategories() {
         },
         error: function (xhr, status, error) {
             console.log("Error loading subcategories:", error);
-            showToast('Ошибка при загрузке подкатегорий', 'error');
+            CommonUtils.showToast('Ошибка при загрузке подкатегорий', 'error');
         },
     });
 }
@@ -487,7 +475,7 @@ function editSubcategory(id) {
         },
         error: function (xhr, status, error) {
             console.log("Error loading subcategory:", error);
-            showToast('Ошибка при загрузке подкатегории', 'error');
+            CommonUtils.showToast('Ошибка при загрузке подкатегории', 'error');
         },
     });
 }
@@ -517,13 +505,13 @@ function saveSubcategory() {
                 contentType: "application/json; charset=UTF-8",
                 dataType: "json",
                 success: function (data) {
-                    showToast('Подкатегория успешно обновлена', 'success');
+                    CommonUtils.showToast('Подкатегория успешно обновлена', 'success');
                     CommonUtils.hideModal('subcategoryModal');
-                    loadAllReferenceData();
+                    loadSubcategories();
                 },
                 error: function (xhr, status, error) {
                     CommonUtils.handleFormErrors(xhr, 'subcategoryForm');
-                    showToast('Ошибка при обновлении подкатегории', 'error');
+                    CommonUtils.showToast('Ошибка при обновлении подкатегории', 'error');
                 },
             });
         } else {
@@ -534,13 +522,13 @@ function saveSubcategory() {
                 contentType: "application/json; charset=UTF-8",
                 dataType: "json",
                 success: function (data) {
-                    showToast('Подкатегория успешно создана', 'success');
+                    CommonUtils.showToast('Подкатегория успешно создана', 'success');
                     CommonUtils.hideModal('subcategoryModal');
-                    loadAllReferenceData();
+                    loadSubcategories();
                 },
                 error: function (xhr, status, error) {
                     CommonUtils.handleFormErrors(xhr, 'subcategoryForm');
-                    showToast('Ошибка при создании подкатегории', 'error');
+                    CommonUtils.showToast('Ошибка при создании подкатегории', 'error');
                 },
             });
         }
@@ -550,20 +538,18 @@ function saveSubcategory() {
 }
 
 function deleteSubcategory(id) {
-    if (confirm('Вы уверены, что хотите удалить эту подкатегорию?')) {
-        $.ajax({
-            url: `/api/subcategories/${id}/`,
-            type: "DELETE",
-            success: function () {
-                showToast('Подкатегория успешно удалена', 'success');
-                loadAllReferenceData();
-            },
-            error: function (xhr, status, error) {
-                console.log("Error deleting subcategory:", error);
-                showToast('Ошибка при удалении подкатегории', 'error');
-            },
-        });
-    }
+    $.ajax({
+        url: `/api/subcategories/${id}/`,
+        type: "DELETE",
+        success: function () {
+            CommonUtils.showToast('Подкатегория успешно удалена', 'success');
+            loadSubcategories();
+        },
+        error: function (xhr, status, error) {
+            console.log("Error deleting subcategory:", error);
+            CommonUtils.showToast('Ошибка при удалении подкатегории', 'error');
+        },
+    });
 }
 
 function enableSubcategory(id) {
@@ -571,31 +557,12 @@ function enableSubcategory(id) {
         url: `/api/subcategories/${id}/enable/`,
         type: "POST",
         success: function () {
-            showToast('Подкатегория успешно включена', 'success');
-            loadAllReferenceData();
+            CommonUtils.showToast('Подкатегория успешно включена', 'success');
+            loadSubcategories();
         },
         error: function (xhr, status, error) {
             console.log("Error enabling subcategory:", error);
-            showToast('Ошибка при включении подкатегории', 'error');
-        },
-    });
-}
-
-function loadSubcategoriesForModal(categoryId) {
-    if (!categoryId) {
-        return;
-    }
-
-    $.ajax({
-        url: `/api/subcategories/?category=${categoryId}&is_active=true`,
-        type: "GET",
-        dataType: "json",
-        success: function (data) {
-            // This function is for future use if needed
-            console.log("Subcategories loaded for category:", categoryId);
-        },
-        error: function (xhr, status, error) {
-            console.log("Error loading subcategories for modal:", error);
+            CommonUtils.showToast('Ошибка при включении подкатегории', 'error');
         },
     });
 }
@@ -623,6 +590,7 @@ function getFieldErrorId(field) {
 
 function hideModal(modalId) {
     $(`#${modalId}`).modal('hide');
+
     // Reset form and editing state
     $(`#${modalId} form`)[0].reset();
     CommonUtils.currentEditingId = null;
@@ -638,35 +606,4 @@ function hideModal(modalId) {
         $("#subcategoryModalTitle").text("Создание подкатегории");
         CommonUtils.loadCategoriesForModal(); // Reset category dropdown
     }
-}
-
-function showToast(message, type = 'info') {
-    // Create toast if it doesn't exist
-    if (!$('#toast').length) {
-        $('body').append(`
-            <div class="toast-container position-fixed bottom-0 end-0 p-3">
-                <div id="toast" class="toast bg-light text-bg-light" role="alert" aria-live="assertive" aria-atomic="true">
-                    <div class="toast-header">
-                        <strong class="me-auto">Уведомление</strong>
-                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                    </div>
-                    <div class="toast-body" id="toastBody"></div>
-                </div>
-            </div>
-        `);
-    }
-
-    $('#toastBody').text(message);
-    $('#toast').removeClass('bg-success bg-danger bg-info');
-
-    if (type === 'success') {
-        $('#toast').addClass('bg-success text-white');
-    } else if (type === 'error') {
-        $('#toast').addClass('bg-danger text-white');
-    } else {
-        $('#toast').addClass('bg-info text-white');
-    }
-
-    const toast = new bootstrap.Toast(document.getElementById('toast'));
-    toast.show();
 }

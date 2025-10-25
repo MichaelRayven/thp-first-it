@@ -126,7 +126,7 @@ function loadRecords(filters = {}) {
               <button class="btn btn-primary btn-sm" onclick="editRecord(${record.id})" data-bs-toggle="modal" data-bs-target="#cashFlowRecordModal">
                 <i class="fas fa-edit"></i>
               </button>
-              <button class="btn btn-danger btn-sm" onclick="deleteRecord(${record.id})">
+              <button class="btn btn-danger btn-sm" onclick="CommonUtils.deleteRecord(${record.id})">
                 <i class="fas fa-trash"></i>
               </button>
             </td>
@@ -286,12 +286,6 @@ function loadSubcategoriesForCategory(categoryId, selectedSubcategoryId = null) 
   });
 }
 
-function deleteRecord(id) {
-  // Store the record ID in the confirm button
-  $("#confirmDelete").data('record-id', id);
-  // Show the confirmation modal
-  $('#deleteConfirmModal').modal('show');
-}
 
 function performDelete(id) {
   $.ajax({

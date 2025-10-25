@@ -267,6 +267,13 @@ class CommonUtils {
             },
         });
     }
+
+    static deleteRecord(id) {
+        // Store the record ID in the confirm button
+        $("#confirmDelete").data('record-id', id);
+        // Show the confirmation modal
+        $('#deleteConfirmModal').modal('show');
+    }
 }
 
 // Make CommonUtils available globally
