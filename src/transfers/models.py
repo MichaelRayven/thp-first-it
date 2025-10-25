@@ -1,13 +1,12 @@
+from decimal import Decimal
+
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models import Manager
 
 
 class Status(models.Model):
-    """Статус записи ДДС (Бизнес, Личное, Налог и т.д.)"""
-
-    objects: Manager['Status']
+    """Статус записи ДДС"""
 
     name = models.CharField(max_length=100, unique=True, verbose_name='Название статуса')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
@@ -23,9 +22,7 @@ class Status(models.Model):
 
 
 class TransactionType(models.Model):
-    """Тип операции (Пополнение, Списание и т.д.)"""
-
-    objects: Manager['TransactionType']
+    """Тип записи ДДС"""
 
     name = models.CharField(max_length=100, unique=True, verbose_name='Название типа')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
@@ -41,9 +38,7 @@ class TransactionType(models.Model):
 
 
 class Category(models.Model):
-    """Категория расходов/доходов (Инфраструктура, Маркетинг и т.д.)"""
-
-    objects: Manager['Category']
+    """Категория ДДС"""
 
     name = models.CharField(max_length=100, unique=True, verbose_name='Название категории')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
@@ -59,9 +54,7 @@ class Category(models.Model):
 
 
 class Subcategory(models.Model):
-    """Подкатегория, связанная с основной категорией"""
-
-    objects: Manager['Subcategory']
+    """Подкатегория ДДС"""
 
     category = models.ForeignKey(
         Category,
@@ -84,8 +77,6 @@ class Subcategory(models.Model):
 
 
 class CashFlowRecord(models.Model):
-    objects: Manager['CashFlowRecord']
-
     status = models.ForeignKey(
         Status,
         on_delete=models.PROTECT,
@@ -112,7 +103,7 @@ class CashFlowRecord(models.Model):
     amount = models.DecimalField(
         max_digits=12,
         decimal_places=2,
-        validators=[MinValueValidator(0.01)],
+        validators=[MinValueValidator(Decimal('0.01'))],
         verbose_name='Сумма (руб.)',
     )
     comment = models.TextField(blank=True, default='', verbose_name='Комментарий')

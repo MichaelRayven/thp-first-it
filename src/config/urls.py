@@ -17,8 +17,11 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import include, path
+from django.views.generic import TemplateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('transfers.urls', namespace='transfers')),
+    path('api/', include('transfers.urls')),
+    path('', TemplateView.as_view(template_name='index.html'), name='index'),
+    path('references/', TemplateView.as_view(template_name='references.html'), name='references'),
 ]
